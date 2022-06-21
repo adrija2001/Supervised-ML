@@ -1,0 +1,54 @@
+# Importing all libraries required in this notebook
+import pandas as pd
+import numpy as np  
+import matplotlib.pyplot as plt  
+%matplotlib inline
+# Reading data from remote link
+url = "http://bit.ly/w-data"
+s_data = pd.read_csv(url)
+print("Data imported successfully")
+
+s_data.head(25)
+#check if there is any null value in dataset
+s_data.isnull==True
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error
+sns.set_style('darkgrid')
+sns.scatterplot(y=s_data['Scores'],x=s_data['Hours'], color='red')
+plt.title('Marks vs. Study Hours', size=20)
+plt.ylabel('Marks Percentage', size=12)
+plt.xlabel('Hours Studied', size=12)
+plt.show()
+#defining X and y from the data
+X = s_data.iloc[:, :-1].values  
+y = s_data.iloc[:, 1].values
+
+#splitting the data in two
+X_train, X_test, y_train, y_test = train_test_split(X, y, 
+                            test_size=0.2, random_state=0) 
+regression=LinearRegression()
+regression.fit(X_train,y_train)
+print('model is trained')
+#predicting the percentage of marks
+pred_y=regression.predict(X_test)
+print(X_test,y_test)
+#printing the predicted values
+prediction = pd.DataFrame({'Hours': [i[0] for i in X_test], 'Predicted Marks': [k for k in pred_y]})  
+prediction
+#comparing the predicted vs. actual values
+df = pd.DataFrame({'Actual': y_test, 'Predicted': pred_y})  
+df 
+#plotting the predictions
+plt.scatter(x=X_test, y=y_test, color='red')
+plt.plot(X_test, pred_y, color='Black')
+plt.title('Actual vs. Predicted',size=20)
+plt.ylabel('Marks percentage', size=12)
+plt.xlabel('Hours Studied', size=12)
+plt.show()
+#calculating the accuracy of the model
+print('mean absolute error: ',mean_absolute_error(y_test,pred_y))
+hours=[9.25]
+answer=regression.predict([hours])
+print("Score={}".format(round(answer[0],3)))
